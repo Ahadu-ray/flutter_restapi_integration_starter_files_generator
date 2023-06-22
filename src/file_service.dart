@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'enums.dart';
+import 'extensions.dart';
 
 class FileService {
   static String _rootFolder = "/";
@@ -20,13 +21,19 @@ class FileService {
     }
   }
 
-  static Future<String> createFolder(
-      {required String folderName,
-      ClassType classType = ClassType.repository}) async {
-    return await Directory('')
+  static Future<String> createFolder({
+    required String folderName,
+  }) async {
+    return await Directory(_rootFolder + folderName)
         .create(recursive: true)
         .then((value) => value.path);
   }
 
-  // static Future<void> createFile({required String fileName}) {}
+  static File createFile(
+      {required String fileName, required ClassType classType}) {
+    File file =
+        File(_rootFolder + classType.folderName + '/${fileName.fileName}');
+    file.createSync();
+    return file;
+  }
 }
