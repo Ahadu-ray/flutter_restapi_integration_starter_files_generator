@@ -31,17 +31,23 @@ class Composer {
   }
 
   void _createMethods({required List<dynamic> json}) {
-    // create methods: if the current folder have folder inside it:
+    // empty strings to hold methods. repo methods is for methods with their implementations written as 
+    // repositories expect that. adapter methods are only function definitions since adapters expect that.
     String repoMethods = "", adapterMethods = "";
+    
+    // create methods: if the current folder have child folder inside it: data[item] will be List<dynamic>
+    // as it will contain list of folder, else there will be data[request] instead, which is the method.
     json.forEach((data) {
       if (data['item'] is List<dynamic>) {
         _createMethods(json: data['item']);
       } else {
         MethodModel model = MethodModel.fromJson(data);
+        // if current request has payload that is put as json, create model for that request payload
         if (model.hasPayload && data['request']?['body']?['mode'] == 'raw') {
           _createModel(
               name: data['name'], body: data['request']['body']['raw']);
         }
+
         repoMethods += repoMethodTemplate(data: model) + "\n";
         adapterMethods += adapterMethodTemplate(model: model) + "\n";
       }
@@ -49,6 +55,7 @@ class Composer {
     _methods = {repoMethods, adapterMethods};
   }
 
+// create repository file based on current class and write string from template together with methods
   void _createRepository() {
     File repo = FileService.createFile(
         fileName: _currentRepoJson['name'], classType: ClassType.repository);
@@ -57,6 +64,7 @@ class Composer {
     repo.writeAsString(repoTemplate);
   }
 
+// create adapter file based on current class and write string from template together with methods
   void _createAdapter() {
     File adapter = FileService.createFile(
         fileName: _currentRepoJson['name'], classType: ClassType.adapter);
@@ -65,6 +73,7 @@ class Composer {
     adapter.writeAsString(adapTemplate);
   }
 
+// generate all variables needed in a single model and create the models with the template stored
   _createModel({
     required String name,
     required String body,
@@ -73,6 +82,10 @@ class Composer {
     models += modelMethodTemplate(name: name.toClassName, variables: variables);
   }
 
+// returns the variables taken from request body with the right data types. If variable on the json 
+// is List, save the variable definition and create model for each item in that list. if it is a map, 
+// create new model for the value while wrting it as variable with name from the key. if data type is
+// null use dynamic, else use the appropriate ones.
   String _getModelVariable({
     required Map<String, dynamic> body,
   }) {
@@ -98,6 +111,7 @@ class Composer {
     return variables;
   }
 
+// save models to file 
   void _saveModels() {
     File model = FileService.createFile(
         fileName: 'freezed_models', classType: ClassType.model);
