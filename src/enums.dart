@@ -1,3 +1,3 @@
 enum ClassType { model, repository, adapter }
 
-enum RequestType { get, post, patch, put, delete }
+enum RequestType { GET, POST, PATCH, PUT, DELETE }

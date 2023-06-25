@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'enums.dart';
 
 extension ClassTypeExtension on ClassType {
@@ -8,7 +10,7 @@ extension ClassTypeExtension on ClassType {
   String get toFolderName {
     switch (this) {
       case ClassType.model:
-        return "freezed models".toFolderName;
+        return "models${getSlash()}freezed models".toFolderName;
       case ClassType.repository:
         return "repositories".toFolderName;
       case ClassType.adapter:
@@ -22,13 +24,13 @@ extension ClassTypeExtension on ClassType {
 extension StringExtension on String {
   // "payment service"=>"PaymentService"
   String get toClassName {
-    return this.toLowerCase().replaceAllMapped(RegExp(r"(^|\s)\w"),
+    return this.toLowerCase().replaceAll(RegExp(r'[^a-zA-Z]'), "").replaceAllMapped(RegExp(r"(^|\s)\w"),
         (match) => match.group(0)!.toUpperCase().replaceAll(" ", ""));
   }
 
   // "finish payment"=>"finishPayment"
   String get toFunctionName {
-    return this.toLowerCase().replaceAllMapped(RegExp(r"\s\w"),
+    return this.toLowerCase().replaceAll(RegExp(r'[^a-zA-Z]'), "").replaceAllMapped(RegExp(r"\s\w"),
         (match) => match.group(0)!.toUpperCase().replaceAll(" ", ""));
   }
 
@@ -53,4 +55,8 @@ extension RequestTypeExtension on RequestType {
   bool get hasBody {
     return this.name == "post" || this.name == "put";
   }
+}
+
+String getSlash(){
+  return Platform.isWindows?'\\':'\/';
 }

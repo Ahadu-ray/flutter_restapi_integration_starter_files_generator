@@ -78,8 +78,13 @@ class Composer {
     required String name,
     required String body,
   }) {
+    try{
     String variables = _getModelVariable(body: jsonDecode(body));
     models += modelMethodTemplate(name: name.toClassName, variables: variables);
+    } catch (e) {
+      print(name+"\n"+body.runtimeType.toString());
+      print(e);
+    }
   }
 
 // returns the variables taken from request body with the right data types. If variable on the json 

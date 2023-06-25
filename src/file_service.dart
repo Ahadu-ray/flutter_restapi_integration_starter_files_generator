@@ -51,7 +51,9 @@ class FileService {
       {required String fileName, required ClassType classType}) {
     File file = File(_rootFolder +
         classType.toFolderName +
-        '\\${(classType != ClassType.model ? fileName + " " + (classType.name) : fileName).toFileName}');
+        getSlash() +
+        '${(classType != ClassType.model ? fileName + " " + (classType.name) : fileName).toFileName}');
+        print(file.path);
     return file;
   }
 }
