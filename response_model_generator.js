@@ -1,3 +1,5 @@
+// copy the following code, go to postman and paste it to your collection's root folder 'Test' section. 
+// The model for that response will be generated and printed out on the console.
 if(pm.response.code==200)
 {
   const responseJson = pm.response.json();
